@@ -5,17 +5,32 @@ var argv = require('minimist')(process.argv.slice(2));
 var baseConfigPath = './conf/config.js';
 var localConfigPath = './conf/config-local.js';
 var config;
+
 var baseConfig = require(argv.base ? argv.base : baseConfigPath);
+
 if (argv.conf) {
     config = require(argv.conf)(baseConfig);
-}
-else {
+} else {
     try {
         config = require(localConfigPath)(baseConfig);
     }
     catch (e) {
         console.warn('Local config not found in standard location: ./conf/config-local.js');
     }
+}
+
+if (argv.syncAll) {
+    var Models = require('./models');
+    return Models.syncAll(config, argv.force)
+    .catch(console.log)
+    .then(process.exit);
+}
+
+if (argv.sync) {
+    var Models = require('./models');
+    return Models.sync(argv.sync)
+    .catch(console.log)
+    .then(process.exit);
 }
 
 var sequelize = new Sequelize(config.mysql.database, config.mysql.user, config.mysql.password, {
