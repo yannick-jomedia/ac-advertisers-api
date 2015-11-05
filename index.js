@@ -1,4 +1,2 @@
 
-
-
-module.exports = require('./lib/api');
+module.exports = require('./lib/advertiser-facade');
